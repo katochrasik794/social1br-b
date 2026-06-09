@@ -1,10 +1,14 @@
 import express from "express";
 import cors from "cors";
 import helmet from "helmet";
+import path from "path";
+import { fileURLToPath } from "url";
 import { env } from "./config/env.js";
 import routes from "./routes/index.js";
 import { errorHandler } from "./middleware/errorHandler.js";
 import { testConnection } from "./lib/db.js";
+
+const __dirname = path.dirname(fileURLToPath(import.meta.url));
 
 const app = express();
 
@@ -21,6 +25,7 @@ app.use(
   })
 );
 app.use(express.json({ limit: "32kb" }));
+app.use("/uploads", express.static(path.join(__dirname, "../uploads")));
 
 app.use("/api", routes);
 

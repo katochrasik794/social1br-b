@@ -11,6 +11,10 @@ export function errorHandler(err: unknown, _req: Request, res: Response, _next: 
     return res.status(400).json(fail(err.errors[0]?.message ?? "Invalid request data"));
   }
 
+  if (err instanceof Error && err.message.includes("Only JPG")) {
+    return res.status(400).json(fail(err.message));
+  }
+
   console.error("[error]", err);
   return res.status(500).json(fail("Internal server error"));
 }

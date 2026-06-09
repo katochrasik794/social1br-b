@@ -21,5 +21,11 @@ export const updateGroupSchema = z.object({
   maxDeposit: z.coerce.number().nullable().optional(),
   minWithdrawal: z.coerce.number().nullable().optional(),
   maxWithdrawal: z.coerce.number().nullable().optional(),
+  badgeLabel: z.string().max(64).nullable().optional(),
+  planDescription: z.string().max(500).nullable().optional(),
+  spreadFrom: z.string().max(64).nullable().optional(),
+  maxLeverageDisplay: z.coerce.number().int().positive().nullable().optional(),
+  commissionText: z.string().max(64).nullable().optional(),
+  minLotSize: z.string().max(32).nullable().optional(),
   isActive: z.boolean().optional(),
 });

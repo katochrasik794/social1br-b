@@ -158,3 +158,113 @@ export async function fetchMt5GroupsWithConfig() {
   );
   return enriched;
 }
+
+function parseMt5Error(data: unknown, fallback: string) {
+  if (data && typeof data === "object") {
+    const obj = data as Record<string, unknown>;
+    return String(obj.message ?? obj.error ?? obj.title ?? fallback);
+  }
+  return fallback;
+}
+
+export async function managerPost(path: string, body: unknown, retry = true, timeoutMs = 30000): Promise<unknown> {
+  const token = await getManagerTokenCached();
+  const controller = new AbortController();
+  const timer = setTimeout(() => controller.abort(), timeoutMs);
+
+  try {
+    const res = await fetch(`${getBaseUrl()}/api/v1${path}`, {
+      method: "POST",
+      headers: {
+        Authorization: `Bearer ${token}`,
+        Accept: "application/json",
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(body),
+      signal: controller.signal,
+    });
+
+    if ((res.status === 401 || res.status === 403) && retry) {
+      clearManagerTokenCache();
+      await getManagerTokenCached(true);
+      return managerPost(path, body, false, timeoutMs);
+    }
+
+    const data = await res.json().catch(() => ({}));
+    if (!res.ok) {
+      throw new Error(parseMt5Error(data, "MT5 API request failed"));
+    }
+    return data;
+  } finally {
+    clearTimeout(timer);
+  }
+}
+
+export function extractAccountLogin(data: unknown): number | null {
+  if (!data || typeof data !== "object") return null;
+  const obj = data as Record<string, unknown>;
+  const nested = obj.data as Record<string, unknown> | undefined;
+  const raw = obj.login ?? obj.Login ?? obj.account_number ?? obj.id ?? nested?.login ?? nested?.Login;
+  const n = Number(raw);
+  return Number.isFinite(n) && n > 0 ? n : null;
+}
+
+export async function openMt5Account(payload: {
+  login?: number;
+  group: string;
+  name: string;
+  email: string;
+  leverage: number;
+  password: string;
+  investorPassword: string;
+  country?: string;
+  city?: string;
+  phone?: string;
+  comment?: string;
+}) {
+  const data = await managerPost(
+    "/mt5/accounts",
+    {
+      login: payload.login,
+      group: payload.group,
+      name: payload.name,
+      email: payload.email,
+      leverage: payload.leverage,
+      password: payload.password,
+      investorPassword: payload.investorPassword,
+      country: payload.country ?? "USA",
+      city: payload.city ?? "New York",
+      phone: payload.phone ?? "+1234567890",
+      comment: payload.comment ?? "New account",
+    },
+    true,
+    60000
+  );
+  const login = extractAccountLogin(data) ?? payload.login;
+  if (!login) throw new Error("MT5 account created but login was not returned");
+  return { login, raw: data };
+}
+
+export async function adjustMt5Balance(
+  login: number | string,
+  type: "Deposit" | "Withdraw",
+  amount: number,
+  comment: string
+) {
+  const balanceType = type === "Withdraw" ? "Withdraw" : "Deposit";
+  return managerPost(`/mt5/accounts/${login}/balance`, {
+    type: balanceType,
+    amount: Math.abs(amount),
+    comment,
+  });
+}
+
+export async function fetchMt5Account(login: number | string) {
+  try {
+    const data = await managerGet(`/mt5/accounts/${login}`);
+    return data as Record<string, unknown>;
+  } catch (err) {
+    if (err instanceof Error && /not found|404/i.test(err.message)) return null;
+    throw err;
+  }
+}

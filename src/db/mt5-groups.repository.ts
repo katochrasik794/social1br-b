@@ -14,6 +14,12 @@ export type Mt5GroupRow = {
   max_deposit: string | null;
   min_withdrawal: string | null;
   max_withdrawal: string | null;
+  badge_label: string | null;
+  plan_description: string | null;
+  spread_from: string | null;
+  max_leverage_display: number | null;
+  commission_text: string | null;
+  min_lot_size: string | null;
   is_active: boolean;
   raw_json: Record<string, unknown>;
   last_synced_at: Date;
@@ -45,6 +51,12 @@ function serializeGroup(row: Mt5GroupRow) {
     maxDeposit: row.max_deposit != null ? Number(row.max_deposit) : null,
     minWithdrawal: row.min_withdrawal != null ? Number(row.min_withdrawal) : null,
     maxWithdrawal: row.max_withdrawal != null ? Number(row.max_withdrawal) : null,
+    badgeLabel: row.badge_label,
+    planDescription: row.plan_description,
+    spreadFrom: row.spread_from,
+    maxLeverageDisplay: row.max_leverage_display ?? 500,
+    commissionText: row.commission_text,
+    minLotSize: row.min_lot_size ?? "0.01 Lots",
     isActive: row.is_active,
     rawJson: row.raw_json,
     lastSyncedAt: row.last_synced_at,
@@ -234,6 +246,12 @@ export async function updateGroupAdminFields(
     maxDeposit: number | null;
     minWithdrawal: number | null;
     maxWithdrawal: number | null;
+    badgeLabel: string | null;
+    planDescription: string | null;
+    spreadFrom: string | null;
+    maxLeverageDisplay: number | null;
+    commissionText: string | null;
+    minLotSize: string | null;
     isActive: boolean;
   }>
 ) {
@@ -249,6 +267,12 @@ export async function updateGroupAdminFields(
     maxDeposit: data.maxDeposit,
     minWithdrawal: data.minWithdrawal,
     maxWithdrawal: data.maxWithdrawal,
+    badgeLabel: data.badgeLabel,
+    planDescription: data.planDescription,
+    spreadFrom: data.spreadFrom,
+    maxLeverageDisplay: data.maxLeverageDisplay,
+    commissionText: data.commissionText,
+    minLotSize: data.minLotSize,
     isActive: data.isActive,
   };
 
@@ -260,6 +284,12 @@ export async function updateGroupAdminFields(
     maxDeposit: "max_deposit",
     minWithdrawal: "min_withdrawal",
     maxWithdrawal: "max_withdrawal",
+    badgeLabel: "badge_label",
+    planDescription: "plan_description",
+    spreadFrom: "spread_from",
+    maxLeverageDisplay: "max_leverage_display",
+    commissionText: "commission_text",
+    minLotSize: "min_lot_size",
     isActive: "is_active",
   };
 

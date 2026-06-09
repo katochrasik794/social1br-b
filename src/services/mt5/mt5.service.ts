@@ -171,6 +171,12 @@ export async function updateGroup(
     maxDeposit: number | null;
     minWithdrawal: number | null;
     maxWithdrawal: number | null;
+    badgeLabel: string | null;
+    planDescription: string | null;
+    spreadFrom: string | null;
+    maxLeverageDisplay: number | null;
+    commissionText: string | null;
+    minLotSize: string | null;
     isActive: boolean;
   }>
 ) {
