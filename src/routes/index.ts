@@ -12,7 +12,11 @@ import publicGatewaysRoutes from "./public/gateways.routes.js";
 import adminManualGatewaysRoutes from "./admin/manual-gateways.routes.js";
 import userActivitiesRoutes from "./user/activities.routes.js";
 import userCopierRoutes from "./user/copier.routes.js";
+import userPammRoutes from "./user/pamm.routes.js";
+import userMamRoutes from "./user/mam.routes.js";
+import userDashboardRoutes from "./user/dashboard.routes.js";
 import adminCopierRoutes from "./admin/copier.routes.js";
+import adminDashboardRoutes from "./admin/dashboard.routes.js";
 
 const router = Router();
 
@@ -27,6 +31,9 @@ router.use("/deposits", depositsRoutes);
 router.use("/withdrawals", withdrawalsRoutes);
 router.use("/activities", userActivitiesRoutes);
 router.use("/copier", userCopierRoutes);
+router.use("/pamm", userPammRoutes);
+router.use("/mam", userMamRoutes);
+router.use("/dashboard", userDashboardRoutes);
 router.use("/admin/mt5", adminMt5Routes);
 router.use("/admin/mt5/accounts", adminTradingAccountsRoutes);
 router.use("/admin/deposits", adminDepositsRoutes);
@@ -34,5 +41,6 @@ router.use("/admin/withdrawals", adminWithdrawalsRoutes);
 router.use("/public", publicGatewaysRoutes);
 router.use("/admin/manual-gateways", adminManualGatewaysRoutes);
 router.use("/admin/copier", adminCopierRoutes);
+router.use("/admin/dashboard", adminDashboardRoutes);
 
 export default router;
