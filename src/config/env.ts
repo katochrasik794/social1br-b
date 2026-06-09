@@ -38,6 +38,10 @@ const envSchema = z.object({
 
 const parsed = envSchema.parse(process.env);
 
+export const corsOrigins = parsed.CORS_ORIGIN.split(",")
+  .map((origin) => origin.trim())
+  .filter(Boolean);
+
 export const env = {
   ...parsed,
   ENCRYPTION_KEY: parsed.ENCRYPTION_KEY ?? parsed.JWT_SECRET,
